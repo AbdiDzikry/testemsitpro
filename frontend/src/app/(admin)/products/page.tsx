@@ -334,7 +334,7 @@ export default function ProductsPage() {
                             </div>
                             <div>
                                 <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Image (Optional)</label>
-                                <input type="file" accept="image/*" onChange={e => setFormData({...formData, image: e.target.files ? e.target.files[0] : null})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none transition-all"/>
+                                <input type="file" accept="image/*" onChange={e => setFormData({...formData, image: e.target.files ? e.target.files[0] : null})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none transition-all file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-500 file:text-white hover:file:bg-orange-600 file:cursor-pointer file:shadow-sm file:shadow-orange-500/20 text-slate-500"/>
                                 {typeof formData.image === 'string' && formData.image && (
                                     <div className="mt-2">
                                         <img src={`http://localhost:8000/storage/${formData.image}`} alt="Preview" className="w-16 h-16 object-cover rounded-md border border-slate-200" />
