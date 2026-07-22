@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import api from '@/lib/api';
-import { Download, Plus, Edit, Trash, Search, ChevronLeft, ChevronRight, X, ChevronDown } from 'lucide-react';
+import { Download, Plus, Edit, Trash, Search, ChevronLeft, ChevronRight, X, ChevronDown, FileText } from 'lucide-react';
 
 const CustomSelect = ({ value, onChange, options, placeholder, className = '' }: { value: string, onChange: (val: string) => void, options: {value: string, label: string}[], placeholder: string, className?: string }) => {
     const [open, setOpen] = useState(false);
@@ -134,6 +134,22 @@ export default function ProductsPage() {
         }
     };
 
+    const handleExportPdf = async () => {
+        try {
+            const response = await api.get('/products/export-pdf', { responseType: 'blob' });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'laporan-produk-emsitpro.pdf');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (e) {
+            console.error('Export PDF error', e);
+            alert('Failed to export PDF');
+        }
+    };
+
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
@@ -227,7 +243,10 @@ export default function ProductsPage() {
                 <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Products List</h1>
                 <div className="flex gap-3 w-full md:w-auto">
                     <button onClick={handleExport} className="flex items-center gap-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2 rounded-lg font-medium transition-all text-sm">
-                        <Download size={16} /> Export
+                        <Download size={16} /> Excel
+                    </button>
+                    <button onClick={handleExportPdf} className="flex items-center gap-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2 rounded-lg font-medium transition-all text-sm">
+                        <FileText size={16} /> PDF
                     </button>
                     <button onClick={() => { setEditingId(null); setFormData({ name: '', category_id: '', stock: 0, price: 0, image: null }); setShowModal(true); }} className="flex items-center gap-2 bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 rounded-lg font-medium transition-all text-sm shadow-sm shadow-orange-500/20">
                         <Plus size={16} /> Add Product

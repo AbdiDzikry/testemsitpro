@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Exports\ProductsExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ProductController extends Controller
 {
@@ -96,5 +97,12 @@ class ProductController extends Controller
     public function export()
     {
         return Excel::download(new ProductsExport, 'products.xlsx');
+    }
+
+    public function exportPdf()
+    {
+        $products = Product::with('category')->orderBy('id', 'desc')->get();
+        $pdf = Pdf::loadView('pdf.products', compact('products'));
+        return $pdf->download('laporan-produk-emsitpro.pdf');
     }
 }
