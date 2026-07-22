@@ -117,6 +117,20 @@ export default function ProductsPage() {
         }
     };
 
+    const handleAddCategory = async () => {
+        const name = window.prompt("Enter new category name:");
+        if (name) {
+            try {
+                const res = await api.post('/categories', { name });
+                await fetchCategories();
+                setFormData({ ...formData, category_id: res.data.id });
+            } catch (e: any) {
+                console.error(e);
+                alert(e.response?.data?.message || "Failed to add category");
+            }
+        }
+    };
+
     const SortIcon = ({ field }: { field: string }) => {
         if (sortField !== field) return null;
         return <span className="ml-1">{sortOrder === 'asc' ? '↑' : '↓'}</span>;
@@ -230,7 +244,12 @@ export default function ProductsPage() {
                                 <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-orange-500 focus:border-orange-500 focus:outline-none transition-all"/>
                             </div>
                             <div>
-                                <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Category</label>
+                                <div className="flex justify-between items-center mb-1">
+                                    <label className="block text-xs font-semibold text-slate-500 uppercase">Category</label>
+                                    <button type="button" onClick={handleAddCategory} className="text-xs text-orange-500 font-medium hover:text-orange-600 flex items-center gap-1">
+                                        <Plus size={12}/> New Category
+                                    </button>
+                                </div>
                                 <select required value={formData.category_id} onChange={e => setFormData({...formData, category_id: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-orange-500 focus:border-orange-500 focus:outline-none transition-all">
                                     <option value="" disabled>Select Category</option>
                                     {categories.map((c: any) => (
