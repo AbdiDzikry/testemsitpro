@@ -311,7 +311,7 @@ export default function ProductsPage() {
                                         )}
                                     </td>
                                     <td className="px-4 py-4 text-sm font-semibold text-slate-800">{p.name}</td>
-                                    <td className="px-4 py-4 text-sm text-slate-500">{p.category?.name || '-'}</td>
+                                    <td className="px-4 py-4 text-sm text-slate-500">{p.category_name || p.category?.name || '-'}</td>
                                     <td className="px-4 py-4 text-sm text-slate-500">{p.stock}</td>
                                     <td className="px-4 py-4 text-sm font-medium text-slate-700">{Number(p.price).toLocaleString('id-ID')}</td>
                                     <td className="px-4 py-4 flex gap-1 justify-center">

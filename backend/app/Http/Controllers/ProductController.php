@@ -13,20 +13,24 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with('category');
+        $query = Product::select('products.*', 'categories.name as category_name')
+                        ->leftJoin('categories', 'products.category_id', '=', 'categories.id');
 
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
-            $query->where('name', 'like', "%{$search}%");
+            $query->where('products.name', 'like', "%{$search}%");
         }
 
         if ($request->has('category_id') && $request->category_id != '') {
-            $query->where('category_id', $request->category_id);
+            $query->where('products.category_id', $request->category_id);
         }
 
         $sortField = $request->input('sort_field', 'id');
-        $sortOrder = $request->input('sort_order', 'desc');
+        if (in_array($sortField, ['id', 'name', 'stock', 'price'])) {
+            $sortField = 'products.' . $sortField;
+        }
         
+        $sortOrder = $request->input('sort_order', 'desc');
         $query->orderBy($sortField, $sortOrder);
 
         $perPage = $request->input('per_page', 10);
