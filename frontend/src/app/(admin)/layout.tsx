@@ -79,7 +79,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <div className="text-orange-500">
                         <Hexagon size={28} fill="currentColor" />
                     </div>
-                    <span className="font-bold text-xl tracking-tight">Emsitpro</span>
+                    <span className="font-bold text-xl tracking-tight uppercase">EMSITPRO</span>
                 </div>
 
                 <div className="px-6 mb-6">
