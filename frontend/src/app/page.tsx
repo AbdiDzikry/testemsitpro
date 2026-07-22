@@ -22,7 +22,8 @@ export default function LoginPage() {
             localStorage.setItem('token', res.data.access_token);
             router.push('/dashboard');
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Login failed');
+            console.error('Login Error:', err);
+            setError(err.response?.data?.message || 'Email atau password salah. Silakan coba lagi.');
         }
     };
 

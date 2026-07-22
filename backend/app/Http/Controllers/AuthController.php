@@ -16,7 +16,7 @@ class AuthController extends Controller
         ]);
 
         if (!Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Email atau password yang Anda masukkan salah.'], 401);
         }
 
         $user = User::where('email', $request->email)->firstOrFail();
