@@ -229,11 +229,11 @@ export default function ProductsPage() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Stock</label>
-                                    <input required type="number" min="0" value={formData.stock} onChange={e => setFormData({...formData, stock: parseInt(e.target.value)})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-orange-500 focus:border-orange-500 focus:outline-none transition-all"/>
+                                    <input required type="number" min="0" value={formData.stock} onChange={e => setFormData({...formData, stock: e.target.value ? parseInt(e.target.value) : '' as any})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-orange-500 focus:border-orange-500 focus:outline-none transition-all"/>
                                 </div>
                                 <div>
                                     <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Price</label>
-                                    <input required type="number" min="0" value={formData.price} onChange={e => setFormData({...formData, price: parseInt(e.target.value)})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-orange-500 focus:border-orange-500 focus:outline-none transition-all"/>
+                                    <input required type="number" min="0" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value ? parseInt(e.target.value) : '' as any})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-orange-500 focus:border-orange-500 focus:outline-none transition-all"/>
                                 </div>
                             </div>
                             <div className="pt-4 flex gap-3 justify-end border-t border-slate-100 mt-6">
