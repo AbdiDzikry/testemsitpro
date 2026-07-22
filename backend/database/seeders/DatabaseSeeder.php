@@ -14,8 +14,8 @@ class DatabaseSeeder extends Seeder
     {
         \App\Models\User::factory()->create([
             'name' => 'Administrator',
-            'email' => 'admin@admin.com',
-            'password' => bcrypt('password'),
+            'email' => 'admin123@email.com',
+            'password' => bcrypt('admin123'),
         ]);
 
         $elektronik = \App\Models\Category::create(['name' => 'Elektronik']);
