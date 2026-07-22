@@ -23,6 +23,7 @@ export default function ProductsPage() {
     const [formData, setFormData] = useState<any>({ name: '', category_id: '', stock: 0, price: 0, image: null });
     const [isAddingCategory, setIsAddingCategory] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
 
     const fetchProducts = async () => {
         setLoading(true);
@@ -231,7 +232,12 @@ export default function ProductsPage() {
                                     <td className="px-4 py-4 text-sm text-slate-500">{p.id}</td>
                                     <td className="px-4 py-4">
                                         {p.image ? (
-                                            <img src={`http://localhost:8000/storage/${p.image}`} alt={p.name} className="w-10 h-10 object-cover rounded-md shadow-sm border border-slate-100" />
+                                            <img 
+                                                src={`http://localhost:8000/storage/${p.image}`} 
+                                                alt={p.name} 
+                                                onClick={() => setPreviewImage(p.image)}
+                                                className="w-10 h-10 object-cover rounded-md shadow-sm border border-slate-100 cursor-pointer hover:opacity-80 transition-opacity" 
+                                            />
                                         ) : (
                                             <div className="w-10 h-10 bg-slate-50 rounded-md flex items-center justify-center text-slate-400 text-xs border border-slate-200">No Img</div>
                                         )}
@@ -337,7 +343,12 @@ export default function ProductsPage() {
                                 <input type="file" accept="image/*" onChange={e => setFormData({...formData, image: e.target.files ? e.target.files[0] : null})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none transition-all file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-500 file:text-white hover:file:bg-orange-600 file:cursor-pointer file:shadow-sm file:shadow-orange-500/20 text-slate-500"/>
                                 {typeof formData.image === 'string' && formData.image && (
                                     <div className="mt-2">
-                                        <img src={`http://localhost:8000/storage/${formData.image}`} alt="Preview" className="w-16 h-16 object-cover rounded-md border border-slate-200" />
+                                        <img 
+                                            src={`http://localhost:8000/storage/${formData.image}`} 
+                                            alt="Preview" 
+                                            onClick={() => setPreviewImage(formData.image as string)}
+                                            className="w-16 h-16 object-cover rounded-md border border-slate-200 cursor-pointer hover:opacity-80 transition-opacity" 
+                                        />
                                     </div>
                                 )}
                             </div>
@@ -346,6 +357,15 @@ export default function ProductsPage() {
                                 <button type="submit" className="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600 transition-all shadow-sm shadow-orange-500/20">Save Product</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {previewImage && (
+                <div className="fixed inset-0 bg-slate-900/80 flex items-center justify-center p-4 z-[60]" onClick={() => setPreviewImage(null)}>
+                    <div className="relative max-w-4xl max-h-[90vh]">
+                        <button onClick={() => setPreviewImage(null)} className="absolute -top-4 -right-4 p-2 bg-white text-slate-800 hover:text-red-500 hover:bg-slate-50 rounded-full shadow-lg transition-all"><X size={20}/></button>
+                        <img src={`http://localhost:8000/storage/${previewImage}`} alt="Full Preview" className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl" onClick={e => e.stopPropagation()} />
                     </div>
                 </div>
             )}
