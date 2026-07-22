@@ -108,7 +108,7 @@ export default function ProductsPage() {
             name: product.name,
             category_id: product.category_id,
             stock: product.stock,
-            price: product.price
+            price: parseInt(product.price, 10)
         });
         setEditingId(product.id);
         setShowModal(true);
@@ -132,6 +132,20 @@ export default function ProductsPage() {
         } catch (e: any) {
             console.error(e);
             alert(e.response?.data?.message || "Failed to add category");
+        }
+    };
+
+    const handleDeleteCategory = async (id: string) => {
+        if (confirm("Are you sure you want to delete this category? All products within it will also be deleted!")) {
+            try {
+                await api.delete(`/categories/${id}`);
+                await fetchCategories();
+                setFormData({ ...formData, category_id: '' });
+                fetchProducts();
+            } catch (e: any) {
+                console.error(e);
+                alert(e.response?.data?.message || "Failed to delete category");
+            }
         }
     };
 
@@ -251,9 +265,16 @@ export default function ProductsPage() {
                                 <div className="flex justify-between items-center mb-1">
                                     <label className="block text-xs font-semibold text-slate-500 uppercase">Category</label>
                                     {!isAddingCategory && (
-                                        <button type="button" onClick={() => setIsAddingCategory(true)} className="text-xs text-orange-500 font-medium hover:text-orange-600 flex items-center gap-1">
-                                            <Plus size={12}/> New Category
-                                        </button>
+                                        <div className="flex gap-4">
+                                            {formData.category_id && (
+                                                <button type="button" onClick={() => handleDeleteCategory(formData.category_id)} className="text-xs text-red-500 font-medium hover:text-red-600 flex items-center gap-1">
+                                                    <Trash size={12}/> Delete Category
+                                                </button>
+                                            )}
+                                            <button type="button" onClick={() => setIsAddingCategory(true)} className="text-xs text-orange-500 font-medium hover:text-orange-600 flex items-center gap-1">
+                                                <Plus size={12}/> New Category
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                                 {isAddingCategory ? (
