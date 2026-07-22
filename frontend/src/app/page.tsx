@@ -106,6 +106,11 @@ export default function LoginPage() {
                     <span className="text-sm font-medium">Permintaan reset password telah dikirimkan ke email Anda.</span>
                 </div>
             )}
+
+            <div className="fixed bottom-6 text-[12px] text-slate-400 text-center">
+                &copy; {new Date().getFullYear()} Emsitpro Inventory. All rights reserved.<br/>
+                Designed & Built by <a href="https://www.linkedin.com/in/sulthan-abdi-dzikry/" target="_blank" rel="noopener noreferrer" className="font-medium text-slate-500 hover:text-orange-500 hover:underline transition-colors">Sulthan Abdi Dzikry</a>
+            </div>
         </div>
     );
 }

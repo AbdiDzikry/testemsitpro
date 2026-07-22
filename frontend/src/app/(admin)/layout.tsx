@@ -128,14 +128,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </a>
                 </nav>
 
-                <div className="p-4 mt-auto">
+                <div className="p-4 mt-auto border-t border-slate-100">
                     <button 
                         onClick={handleLogout} 
-                        className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-500 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all"
+                        className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-500 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all mb-4"
                     >
                         <LogOut size={18} />
                         Logout
                     </button>
+                    <div className="text-[11px] text-slate-400 text-center leading-relaxed">
+                        &copy; {new Date().getFullYear()} Emsitpro.<br/>
+                        Built by <a href="https://www.linkedin.com/in/sulthan-abdi-dzikry/" target="_blank" rel="noopener noreferrer" className="font-medium text-slate-500 hover:text-orange-500 hover:underline transition-colors">Sulthan Abdi Dzikry</a>
+                    </div>
                 </div>
             </aside>
 
