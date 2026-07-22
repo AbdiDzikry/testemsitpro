@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Package } from 'lucide-react';
+import Link from 'next/link';
 import api from '@/lib/api';
 
 export default function DashboardPage() {
@@ -30,12 +31,12 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between mb-8">
                 <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Dashboard</h1>
                 <div className="flex gap-3">
-                    <button className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all">
+                    <button onClick={() => window.open('http://localhost:8000/api/products/export', '_blank')} className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all">
                         Export Report
                     </button>
-                    <button className="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600 transition-all shadow-sm shadow-orange-500/20">
+                    <Link href="/products" className="flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600 transition-all shadow-sm shadow-orange-500/20">
                         New Product
-                    </button>
+                    </Link>
                 </div>
             </div>
             
