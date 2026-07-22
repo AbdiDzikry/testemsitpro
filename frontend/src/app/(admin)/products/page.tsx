@@ -75,6 +75,7 @@ export default function ProductsPage() {
     const [newCategoryName, setNewCategoryName] = useState('');
     const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+    const [toastMessage, setToastMessage] = useState<string | null>(null);
 
     const fetchProducts = async () => {
         setLoading(true);
@@ -169,11 +170,16 @@ export default function ProductsPage() {
                 await api.post(`/products/${editingId}`, submitData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
+                setToastMessage('Produk berhasil diperbarui!');
             } else {
                 await api.post('/products', submitData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
+                setToastMessage('Produk berhasil ditambahkan!');
             }
+            
+            setTimeout(() => setToastMessage(null), 3000);
+            
             setShowModal(false);
             setFormData({ name: '', category_id: '', stock: 0, price: 0, image: null });
             setEditingId(null);
@@ -532,6 +538,13 @@ export default function ProductsPage() {
                             </div>
                         </div>
                     </div>
+                </div>
+            )}
+
+            {toastMessage && (
+                <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] bg-slate-800 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-[slideIn_0.3s_ease-out]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <span className="text-sm font-medium">{toastMessage}</span>
                 </div>
             )}
         </div>
