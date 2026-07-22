@@ -21,6 +21,8 @@ export default function ProductsPage() {
     const [showModal, setShowModal] = useState(false);
     const [editingId, setEditingId] = useState<number | null>(null);
     const [formData, setFormData] = useState({ name: '', category_id: '', stock: 0, price: 0 });
+    const [isAddingCategory, setIsAddingCategory] = useState(false);
+    const [newCategoryName, setNewCategoryName] = useState('');
 
     const fetchProducts = async () => {
         setLoading(true);
@@ -92,6 +94,8 @@ export default function ProductsPage() {
             setShowModal(false);
             setFormData({ name: '', category_id: '', stock: 0, price: 0 });
             setEditingId(null);
+            setIsAddingCategory(false);
+            setNewCategoryName('');
             fetchProducts();
         } catch (e) {
             console.error(e);
@@ -118,16 +122,16 @@ export default function ProductsPage() {
     };
 
     const handleAddCategory = async () => {
-        const name = window.prompt("Enter new category name:");
-        if (name) {
-            try {
-                const res = await api.post('/categories', { name });
-                await fetchCategories();
-                setFormData({ ...formData, category_id: res.data.id });
-            } catch (e: any) {
-                console.error(e);
-                alert(e.response?.data?.message || "Failed to add category");
-            }
+        if (!newCategoryName.trim()) return;
+        try {
+            const res = await api.post('/categories', { name: newCategoryName });
+            await fetchCategories();
+            setFormData({ ...formData, category_id: res.data.id });
+            setIsAddingCategory(false);
+            setNewCategoryName('');
+        } catch (e: any) {
+            console.error(e);
+            alert(e.response?.data?.message || "Failed to add category");
         }
     };
 
@@ -246,16 +250,32 @@ export default function ProductsPage() {
                             <div>
                                 <div className="flex justify-between items-center mb-1">
                                     <label className="block text-xs font-semibold text-slate-500 uppercase">Category</label>
-                                    <button type="button" onClick={handleAddCategory} className="text-xs text-orange-500 font-medium hover:text-orange-600 flex items-center gap-1">
-                                        <Plus size={12}/> New Category
-                                    </button>
+                                    {!isAddingCategory && (
+                                        <button type="button" onClick={() => setIsAddingCategory(true)} className="text-xs text-orange-500 font-medium hover:text-orange-600 flex items-center gap-1">
+                                            <Plus size={12}/> New Category
+                                        </button>
+                                    )}
                                 </div>
-                                <select required value={formData.category_id} onChange={e => setFormData({...formData, category_id: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-orange-500 focus:border-orange-500 focus:outline-none transition-all">
-                                    <option value="" disabled>Select Category</option>
-                                    {categories.map((c: any) => (
-                                        <option key={c.id} value={c.id}>{c.name}</option>
-                                    ))}
-                                </select>
+                                {isAddingCategory ? (
+                                    <div className="flex gap-2">
+                                        <input 
+                                            type="text" 
+                                            value={newCategoryName} 
+                                            onChange={e => setNewCategoryName(e.target.value)} 
+                                            placeholder="Category name"
+                                            className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-orange-500 focus:border-orange-500 focus:outline-none transition-all"
+                                        />
+                                        <button type="button" onClick={handleAddCategory} className="px-3 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600 shadow-sm shadow-orange-500/20">Save</button>
+                                        <button type="button" onClick={() => { setIsAddingCategory(false); setNewCategoryName(''); }} className="px-3 py-2 bg-slate-100 text-slate-500 rounded-lg hover:bg-slate-200 transition-all flex items-center justify-center"><X size={16}/></button>
+                                    </div>
+                                ) : (
+                                    <select required value={formData.category_id} onChange={e => setFormData({...formData, category_id: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-orange-500 focus:border-orange-500 focus:outline-none transition-all">
+                                        <option value="" disabled>Select Category</option>
+                                        {categories.map((c: any) => (
+                                            <option key={c.id} value={c.id}>{c.name}</option>
+                                        ))}
+                                    </select>
+                                )}
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
