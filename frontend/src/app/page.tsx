@@ -8,6 +8,7 @@ export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [showToast, setShowToast] = useState(false);
     const router = useRouter();
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -55,7 +56,17 @@ export default function LoginPage() {
                     <div>
                         <div className="flex items-center justify-between mb-2">
                             <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Password</label>
-                            <a href="#" className="text-xs font-medium text-orange-500 hover:text-orange-600">Forgot password?</a>
+                            <a 
+                                href="#" 
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setShowToast(true);
+                                    setTimeout(() => setShowToast(false), 3500);
+                                }}
+                                className="text-xs font-medium text-orange-500 hover:text-orange-600"
+                            >
+                                Forgot password?
+                            </a>
                         </div>
                         <input 
                             type="password" 
@@ -76,6 +87,14 @@ export default function LoginPage() {
                     </div>
                 </form>
             </div>
+
+            {/* Forgot Password Toast Notification */}
+            {showToast && (
+                <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-[slideIn_0.3s_ease-out]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <span className="text-sm font-medium">Permintaan reset password telah dikirimkan ke email Anda.</span>
+                </div>
+            )}
         </div>
     );
 }
