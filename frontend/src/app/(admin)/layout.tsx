@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { LayoutDashboard, Package, LogOut, Bell, Search, Hexagon } from 'lucide-react';
@@ -11,6 +11,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const [isClient, setIsClient] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [showNotifications, setShowNotifications] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setShowNotifications(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     useEffect(() => {
         setIsClient(true);
@@ -108,7 +119,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         <span className="text-slate-900 capitalize">{pathname.replace('/', '')}</span>
                     </div>
                     <div className="flex items-center gap-4">
-                        <div className="relative">
+                        <div className="relative" ref={dropdownRef}>
                             <button onClick={() => setShowNotifications(!showNotifications)} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all relative">
                                 <Bell size={20} />
                                 {notifications.length > 0 && (
