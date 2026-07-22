@@ -20,11 +20,23 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('admin123'),
         ]);
 
-        $elektronik = Category::create(['name' => 'Elektronik']);
-        $pakaian = Category::create(['name' => 'Pakaian']);
+        $categories = [
+            Category::create(['name' => 'Elektronik']),
+            Category::create(['name' => 'Pakaian Pria & Wanita']),
+            Category::create(['name' => 'Peralatan Rumah Tangga']),
+            Category::create(['name' => 'Alat Tulis Kantor']),
+            Category::create(['name' => 'Kesehatan & Perawatan']),
+        ];
 
-        Product::create(['category_id' => $elektronik->id, 'name' => 'Laptop Asus', 'stock' => 10, 'price' => 15000000]);
-        Product::create(['category_id' => $elektronik->id, 'name' => 'Smartphone Samsung', 'stock' => 20, 'price' => 8000000]);
-        Product::create(['category_id' => $pakaian->id, 'name' => 'Kemeja Pria', 'stock' => 50, 'price' => 200000]);
+        $faker = \Faker\Factory::create('id_ID');
+        for ($i = 1; $i <= 50; $i++) {
+            $cat = $categories[array_rand($categories)];
+            Product::create([
+                'category_id' => $cat->id,
+                'name' => ucwords($faker->words(rand(2, 3), true)),
+                'stock' => $faker->numberBetween(5, 500),
+                'price' => $faker->numberBetween(10, 5000) * 1000,
+            ]);
+        }
     }
 }
