@@ -265,14 +265,14 @@ export default function ProductsPage() {
         <div className="bg-white rounded-xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-slate-100 p-6 min-h-[calc(100vh-4rem)] relative flex flex-col">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Products List</h1>
-                <div className="flex gap-3 w-full md:w-auto">
-                    <button onClick={handleExport} className="flex items-center gap-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2 rounded-lg font-medium transition-all text-sm">
+                <div className="flex flex-wrap gap-2 md:gap-3 w-full md:w-auto">
+                    <button onClick={handleExport} className="flex-1 md:flex-none justify-center flex items-center gap-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-3 md:px-4 py-2 rounded-lg font-medium transition-all text-sm whitespace-nowrap">
                         <Download size={16} /> Excel
                     </button>
-                    <button onClick={handleExportPdf} className="flex items-center gap-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2 rounded-lg font-medium transition-all text-sm">
+                    <button onClick={handleExportPdf} className="flex-1 md:flex-none justify-center flex items-center gap-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-3 md:px-4 py-2 rounded-lg font-medium transition-all text-sm whitespace-nowrap">
                         <FileText size={16} /> PDF
                     </button>
-                    <button onClick={() => { setEditingId(null); setFormData({ name: '', category_id: '', stock: 0, price: 0, image: null }); setShowModal(true); }} className="flex items-center gap-2 bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 rounded-lg font-medium transition-all text-sm shadow-sm shadow-orange-500/20">
+                    <button onClick={() => { setEditingId(null); setFormData({ name: '', category_id: '', stock: 0, price: 0, image: null }); setShowModal(true); }} className="w-full md:w-auto justify-center flex items-center gap-2 bg-orange-500 text-white hover:bg-orange-600 px-3 md:px-4 py-2 rounded-lg font-medium transition-all text-sm shadow-sm shadow-orange-500/20 whitespace-nowrap">
                         <Plus size={16} /> Add Product
                     </button>
                 </div>
