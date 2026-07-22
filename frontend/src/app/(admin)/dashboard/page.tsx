@@ -74,7 +74,7 @@ export default function DashboardPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-slate-100 h-[420px] flex flex-col">
+                <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-slate-100 min-h-[420px] h-full flex flex-col">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-lg font-bold text-slate-800">Products Overview</h2>
                         <select className="bg-white border border-slate-200 text-slate-500 text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-orange-500">
@@ -88,14 +88,14 @@ export default function DashboardPage() {
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} dy={10} />
                                 <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
-                                <Tooltip cursor={{fill: '#f8fafc'}} contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
+                                <Tooltip cursor={{fill: '#f8fafc'}} contentStyle={{backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #f1f5f9', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', color: '#475569'}} itemStyle={{color: '#475569', fontWeight: 600}} />
                                 <Bar dataKey="products_count" fill="#f97316" radius={[4, 4, 0, 0]} maxBarSize={40} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
                 
-                <div className="bg-white p-6 rounded-xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-slate-100 h-[420px] flex flex-col">
+                <div className="bg-white p-6 rounded-xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-slate-100 min-h-[420px] h-full flex flex-col">
                     <h2 className="text-lg font-bold text-slate-800 mb-2">Category Status</h2>
                     <p className="text-sm text-slate-500 mb-8">Distribution of products across categories</p>
                     
@@ -112,17 +112,17 @@ export default function DashboardPage() {
                                     dataKey="products_count"
                                 >
                                     {data.map((entry: any, index: number) => (
-                                        <Cell key={`cell-${index}`} fill={['#f97316', '#fdba74', '#fed7aa', '#ffedd5'][index % 4]} />
+                                        <Cell key={`cell-${index}`} fill={['#f97316', '#fb923c', '#fdba74', '#fed7aa', '#ffedd5'][index % 5]} />
                                     ))}
                                 </Pie>
-                                <Tooltip contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
+                                <Tooltip contentStyle={{backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #f1f5f9', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', color: '#475569'}} itemStyle={{color: '#475569', fontWeight: 600}} />
                             </PieChart>
                         </ResponsiveContainer>
                         
                         <div className="grid grid-cols-2 gap-4 mt-6">
                             {data.map((item: any, i: number) => (
                                 <div key={item.id} className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ['#f97316', '#fdba74', '#fed7aa', '#ffedd5'][i % 4] }}></div>
+                                    <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: ['#f97316', '#fb923c', '#fdba74', '#fed7aa', '#ffedd5'][i % 5] }}></div>
                                     <span className="text-xs font-medium text-slate-600 truncate" title={item.name}>{item.name}</span>
                                 </div>
                             ))}
