@@ -27,6 +27,10 @@ class DatabaseSeeder extends Seeder
             Category::create(['name' => 'Alat Tulis Kantor']),
             Category::create(['name' => 'Kesehatan & Perawatan']),
         ];
+        
+        foreach ($categories as $cat) {
+            \App\Models\Notification::create(['message' => "New category added: {$cat->name}", 'is_read' => true]);
+        }
 
         $productNames = [
             'Elektronik' => ['Laptop Asus ROG', 'Smartphone Samsung Galaxy', 'TV LED LG 32 inch', 'Mouse Wireless Logitech', 'Keyboard Mekanikal Rexus', 'Monitor Dell 4K', 'Smartwatch Apple', 'Tablet iPad Pro', 'Earphone TWS Sony', 'Powerbank Anker 10000mAh'],
@@ -44,12 +48,14 @@ class DatabaseSeeder extends Seeder
             
             // Generate 10 products per category
             foreach ($names as $name) {
-                Product::create([
+                $product = Product::create([
                     'category_id' => $cat->id,
                     'name' => $name,
                     'stock' => $faker->numberBetween(5, 500),
                     'price' => $faker->numberBetween(10, 300) * 10000,
                 ]);
+                
+                \App\Models\Notification::create(['message' => "New product added: {$product->name}", 'is_read' => true]);
             }
         }
     }
