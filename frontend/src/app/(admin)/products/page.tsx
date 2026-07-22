@@ -20,7 +20,7 @@ export default function ProductsPage() {
     // Modal
     const [showModal, setShowModal] = useState(false);
     const [editingId, setEditingId] = useState<number | null>(null);
-    const [formData, setFormData] = useState({ name: '', category_id: '', stock: 0, price: 0 });
+    const [formData, setFormData] = useState<any>({ name: '', category_id: '', stock: 0, price: 0, image: null });
     const [isAddingCategory, setIsAddingCategory] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
 
@@ -86,20 +86,35 @@ export default function ProductsPage() {
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            const submitData = new FormData();
+            submitData.append('name', formData.name);
+            submitData.append('category_id', formData.category_id);
+            submitData.append('stock', formData.stock.toString());
+            submitData.append('price', formData.price.toString());
+            
+            if (formData.image instanceof File) {
+                submitData.append('image', formData.image);
+            }
+
             if (editingId) {
-                await api.put(`/products/${editingId}`, formData);
+                submitData.append('_method', 'PUT');
+                await api.post(`/products/${editingId}`, submitData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
             } else {
-                await api.post('/products', formData);
+                await api.post('/products', submitData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
             }
             setShowModal(false);
-            setFormData({ name: '', category_id: '', stock: 0, price: 0 });
+            setFormData({ name: '', category_id: '', stock: 0, price: 0, image: null });
             setEditingId(null);
             setIsAddingCategory(false);
             setNewCategoryName('');
             fetchProducts();
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
-            alert("Error saving data");
+            alert(e.response?.data?.message || "Error saving data");
         }
     };
 
@@ -108,7 +123,8 @@ export default function ProductsPage() {
             name: product.name,
             category_id: product.category_id,
             stock: product.stock,
-            price: parseInt(product.price, 10)
+            price: parseInt(product.price, 10),
+            image: product.image
         });
         setEditingId(product.id);
         setShowModal(true);
@@ -162,7 +178,7 @@ export default function ProductsPage() {
                     <button onClick={handleExport} className="flex items-center gap-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2 rounded-lg font-medium transition-all text-sm">
                         <Download size={16} /> Export
                     </button>
-                    <button onClick={() => { setEditingId(null); setFormData({ name: '', category_id: '', stock: 0, price: 0 }); setShowModal(true); }} className="flex items-center gap-2 bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 rounded-lg font-medium transition-all text-sm shadow-sm shadow-orange-500/20">
+                    <button onClick={() => { setEditingId(null); setFormData({ name: '', category_id: '', stock: 0, price: 0, image: null }); setShowModal(true); }} className="flex items-center gap-2 bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 rounded-lg font-medium transition-all text-sm shadow-sm shadow-orange-500/20">
                         <Plus size={16} /> Add Product
                     </button>
                 </div>
@@ -196,6 +212,7 @@ export default function ProductsPage() {
                     <thead>
                         <tr className="border-b border-slate-200 text-xs uppercase tracking-wider text-slate-400">
                             <th className="px-4 py-3 font-semibold cursor-pointer hover:text-slate-600" onClick={() => handleSort('id')}>ID <SortIcon field="id"/></th>
+                            <th className="px-4 py-3 font-semibold w-16">Image</th>
                             <th className="px-4 py-3 font-semibold cursor-pointer hover:text-slate-600" onClick={() => handleSort('name')}>Name <SortIcon field="name"/></th>
                             <th className="px-4 py-3 font-semibold">Category</th>
                             <th className="px-4 py-3 font-semibold cursor-pointer hover:text-slate-600" onClick={() => handleSort('stock')}>Stock <SortIcon field="stock"/></th>
@@ -205,13 +222,20 @@ export default function ProductsPage() {
                     </thead>
                     <tbody>
                         {loading ? (
-                            <tr><td colSpan={6} className="text-center py-8 text-slate-500">Loading data...</td></tr>
+                            <tr><td colSpan={7} className="text-center py-8 text-slate-500">Loading data...</td></tr>
                         ) : products.length === 0 ? (
-                            <tr><td colSpan={6} className="text-center py-8 text-slate-500">No products found.</td></tr>
+                            <tr><td colSpan={7} className="text-center py-8 text-slate-500">No products found.</td></tr>
                         ) : (
                             products.map((p: any) => (
                                 <tr key={p.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
                                     <td className="px-4 py-4 text-sm text-slate-500">{p.id}</td>
+                                    <td className="px-4 py-4">
+                                        {p.image ? (
+                                            <img src={`http://localhost:8000/storage/${p.image}`} alt={p.name} className="w-10 h-10 object-cover rounded-md shadow-sm border border-slate-100" />
+                                        ) : (
+                                            <div className="w-10 h-10 bg-slate-50 rounded-md flex items-center justify-center text-slate-400 text-xs border border-slate-200">No Img</div>
+                                        )}
+                                    </td>
                                     <td className="px-4 py-4 text-sm font-semibold text-slate-800">{p.name}</td>
                                     <td className="px-4 py-4 text-sm text-slate-500">{p.category?.name || '-'}</td>
                                     <td className="px-4 py-4 text-sm text-slate-500">{p.stock}</td>
@@ -307,6 +331,15 @@ export default function ProductsPage() {
                                     <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Price</label>
                                     <input required type="number" min="0" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value ? parseInt(e.target.value) : '' as any})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-orange-500 focus:border-orange-500 focus:outline-none transition-all"/>
                                 </div>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Image (Optional)</label>
+                                <input type="file" accept="image/*" onChange={e => setFormData({...formData, image: e.target.files ? e.target.files[0] : null})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none transition-all"/>
+                                {typeof formData.image === 'string' && formData.image && (
+                                    <div className="mt-2">
+                                        <img src={`http://localhost:8000/storage/${formData.image}`} alt="Preview" className="w-16 h-16 object-cover rounded-md border border-slate-200" />
+                                    </div>
+                                )}
                             </div>
                             <div className="pt-4 flex gap-3 justify-end border-t border-slate-100 mt-6">
                                 <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all">Cancel</button>
