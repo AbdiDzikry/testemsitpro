@@ -11,4 +11,10 @@ class NotificationController extends Controller
         $notifications = \App\Models\Notification::latest()->take(10)->get();
         return response()->json($notifications);
     }
+
+    public function markAsRead()
+    {
+        \App\Models\Notification::where('is_read', false)->update(['is_read' => true]);
+        return response()->json(['message' => 'All marked as read']);
+    }
 }

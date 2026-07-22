@@ -49,6 +49,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         }
     };
 
+    const unreadCount = notifications.filter((n: any) => !n.is_read).length;
+
+    const handleToggleNotifications = () => {
+        const token = localStorage.getItem('token');
+        if (!showNotifications && unreadCount > 0 && token) {
+            fetch('http://localhost:8000/api/notifications/read', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).catch(console.error);
+            
+            setNotifications(notifications.map((n: any) => ({ ...n, is_read: true })));
+        }
+        setShowNotifications(!showNotifications);
+    };
+
     const handleLogout = () => {
         localStorage.removeItem('token');
         router.push('/');
@@ -120,9 +135,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </div>
                     <div className="flex items-center gap-4">
                         <div className="relative" ref={dropdownRef}>
-                            <button onClick={() => setShowNotifications(!showNotifications)} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all relative">
+                            <button onClick={handleToggleNotifications} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all relative">
                                 <Bell size={20} />
-                                {notifications.length > 0 && (
+                                {unreadCount > 0 && (
                                     <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#F8F9FA]"></span>
                                 )}
                             </button>
@@ -137,8 +152,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                             <div className="p-4 text-center text-sm text-slate-500">No notifications yet</div>
                                         ) : (
                                             notifications.map((notif: any) => (
-                                                <div key={notif.id} className="p-4 border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                                                    <p className="text-sm text-slate-700">{notif.message}</p>
+                                                <div key={notif.id} className={`p-4 border-b border-slate-50 hover:bg-slate-50 transition-colors ${notif.is_read ? 'bg-white' : 'bg-orange-50/50'}`}>
+                                                    <p className={`text-sm ${notif.is_read ? 'text-slate-600' : 'text-slate-800 font-medium'}`}>{notif.message}</p>
                                                     <span className="text-xs text-slate-400 mt-1 block">{new Date(notif.created_at).toLocaleString('id-ID')}</span>
                                                 </div>
                                             ))

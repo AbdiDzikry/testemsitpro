@@ -24,4 +24,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/products/export', [ProductController::class, 'export']);
     Route::apiResource('products', ProductController::class);
     Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index']);
+    Route::post('/notifications/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead']);
 });
