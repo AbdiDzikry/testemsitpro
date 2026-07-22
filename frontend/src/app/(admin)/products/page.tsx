@@ -1,8 +1,58 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '@/lib/api';
-import { Download, Plus, Edit, Trash, Search, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Download, Plus, Edit, Trash, Search, ChevronLeft, ChevronRight, X, ChevronDown } from 'lucide-react';
+
+const CustomSelect = ({ value, onChange, options, placeholder, className = '' }: { value: string, onChange: (val: string) => void, options: {value: string, label: string}[], placeholder: string, className?: string }) => {
+    const [open, setOpen] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (ref.current && !ref.current.contains(event.target as Node)) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const selectedOption = options.find(o => o.value === value);
+
+    return (
+        <div className={`relative ${className}`} ref={ref}>
+            <div 
+                onClick={() => setOpen(!open)}
+                className={`w-full px-4 py-2 bg-slate-50 border ${open ? 'border-orange-500 ring-1 ring-orange-500' : 'border-slate-200'} rounded-lg text-sm transition-all cursor-pointer flex justify-between items-center`}
+            >
+                <span className={selectedOption ? 'text-slate-800' : 'text-slate-500'}>
+                    {selectedOption ? selectedOption.label : placeholder}
+                </span>
+                <ChevronDown size={16} className={`text-slate-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+            </div>
+            {open && (
+                <div className="absolute z-[70] w-full mt-2 bg-white border border-slate-100 rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] max-h-60 overflow-y-auto py-2">
+                    <div 
+                        onClick={() => { onChange(''); setOpen(false); }}
+                        className="px-4 py-2.5 text-sm text-slate-500 hover:bg-slate-50 cursor-pointer transition-colors"
+                    >
+                        {placeholder}
+                    </div>
+                    {options.map(opt => (
+                        <div 
+                            key={opt.value}
+                            onClick={() => { onChange(opt.value); setOpen(false); }}
+                            className={`px-4 py-2.5 text-sm cursor-pointer transition-colors ${value === opt.value ? 'bg-orange-50 text-orange-600 font-medium' : 'text-slate-700 hover:bg-slate-50'}`}
+                        >
+                            {opt.label}
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
 
 export default function ProductsPage() {
     const [products, setProducts] = useState([]);
@@ -196,32 +246,34 @@ export default function ProductsPage() {
                         className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all"
                     />
                 </div>
-                <select 
+                <CustomSelect 
                     value={categoryId} 
-                    onChange={(e) => { setCategoryId(e.target.value); setPage(1); }}
-                    className="w-full md:w-64 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all"
-                >
-                    <option value="">All Categories</option>
-                    {categories.map((c: any) => (
-                        <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
-                </select>
-                <select 
+                    onChange={(val) => { setCategoryId(val); setPage(1); }}
+                    placeholder="All Categories"
+                    options={categories.map((c: any) => ({ value: c.id.toString(), label: c.name }))}
+                    className="w-full md:w-64"
+                />
+                <CustomSelect 
                     value={`${sortField}-${sortOrder}`} 
-                    onChange={(e) => { 
-                        const [f, o] = e.target.value.split('-'); 
-                        setSortField(f); 
-                        setSortOrder(o); 
+                    onChange={(val) => { 
+                        if (!val) { setSortField('id'); setSortOrder('desc'); }
+                        else {
+                            const [f, o] = val.split('-'); 
+                            setSortField(f); 
+                            setSortOrder(o); 
+                        }
                         setPage(1); 
                     }}
-                    className="w-full md:w-48 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all"
-                >
-                    <option value="id-desc">Latest Added</option>
-                    <option value="name-asc">Name (A-Z)</option>
-                    <option value="name-desc">Name (Z-A)</option>
-                    <option value="price-asc">Lowest Price</option>
-                    <option value="price-desc">Highest Price</option>
-                </select>
+                    placeholder="Default Sorting"
+                    options={[
+                        { value: 'id-desc', label: 'Latest Added' },
+                        { value: 'name-asc', label: 'Name (A-Z)' },
+                        { value: 'name-desc', label: 'Name (Z-A)' },
+                        { value: 'price-asc', label: 'Lowest Price' },
+                        { value: 'price-desc', label: 'Highest Price' },
+                    ]}
+                    className="w-full md:w-48"
+                />
             </div>
 
             <div className="overflow-x-auto">
@@ -336,12 +388,12 @@ export default function ProductsPage() {
                                         <button type="button" onClick={() => { setIsAddingCategory(false); setNewCategoryName(''); }} className="px-3 py-2 bg-slate-100 text-slate-500 rounded-lg hover:bg-slate-200 transition-all flex items-center justify-center"><X size={16}/></button>
                                     </div>
                                 ) : (
-                                    <select required value={formData.category_id} onChange={e => setFormData({...formData, category_id: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-1 focus:ring-orange-500 focus:border-orange-500 focus:outline-none transition-all">
-                                        <option value="" disabled>Select Category</option>
-                                        {categories.map((c: any) => (
-                                            <option key={c.id} value={c.id}>{c.name}</option>
-                                        ))}
-                                    </select>
+                                    <CustomSelect 
+                                        value={formData.category_id ? formData.category_id.toString() : ''} 
+                                        onChange={(val) => setFormData({...formData, category_id: val})}
+                                        placeholder="Select Category"
+                                        options={categories.map((c: any) => ({ value: c.id.toString(), label: c.name }))}
+                                    />
                                 )}
                             </div>
                             <div className="grid grid-cols-2 gap-4">
