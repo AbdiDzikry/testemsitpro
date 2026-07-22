@@ -206,6 +206,22 @@ export default function ProductsPage() {
                         <option key={c.id} value={c.id}>{c.name}</option>
                     ))}
                 </select>
+                <select 
+                    value={`${sortField}-${sortOrder}`} 
+                    onChange={(e) => { 
+                        const [f, o] = e.target.value.split('-'); 
+                        setSortField(f); 
+                        setSortOrder(o); 
+                        setPage(1); 
+                    }}
+                    className="w-full md:w-48 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all"
+                >
+                    <option value="id-desc">Latest Added</option>
+                    <option value="name-asc">Name (A-Z)</option>
+                    <option value="name-desc">Name (Z-A)</option>
+                    <option value="price-asc">Lowest Price</option>
+                    <option value="price-desc">Highest Price</option>
+                </select>
             </div>
 
             <div className="overflow-x-auto">
