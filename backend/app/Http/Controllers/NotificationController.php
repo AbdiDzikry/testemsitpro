@@ -8,7 +8,7 @@ class NotificationController extends Controller
 {
     public function index()
     {
-        $notifications = \App\Models\Notification::latest()->take(10)->get();
+        $notifications = \App\Models\Notification::latest()->take(50)->get();
         return response()->json($notifications);
     }
 
