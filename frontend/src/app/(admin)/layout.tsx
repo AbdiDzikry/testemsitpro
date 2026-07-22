@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { LayoutDashboard, Package, LogOut, Bell, Search, Hexagon } from 'lucide-react';
+import { LayoutDashboard, Package, LogOut, Bell, Search, Hexagon, Menu, X } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -11,6 +11,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const [isClient, setIsClient] = useState(false);
     const [notifications, setNotifications] = useState<any[]>([]);
     const [showNotifications, setShowNotifications] = useState(false);
+    const [showSidebar, setShowSidebar] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -34,6 +35,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             return () => clearInterval(interval);
         }
     }, [router]);
+
+    // Close sidebar when navigating on mobile
+    useEffect(() => {
+        setShowSidebar(false);
+    }, [pathname]);
 
     const fetchNotifications = async (token: string) => {
         try {
@@ -72,14 +78,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (!isClient) return null;
 
     return (
-        <div className="flex h-screen bg-[#F8F9FA] text-slate-800 font-sans overflow-hidden">
+        <div className="flex h-screen bg-[#F8F9FA] text-slate-800 font-sans overflow-hidden relative">
+            
+            {/* Mobile Overlay */}
+            {showSidebar && (
+                <div 
+                    className="fixed inset-0 bg-slate-900/50 z-30 md:hidden" 
+                    onClick={() => setShowSidebar(false)}
+                ></div>
+            )}
+
             {/* Sidebar */}
-            <aside className="w-[260px] bg-white border-r border-slate-200 flex flex-col flex-shrink-0">
-                <div className="h-20 flex items-center px-6 gap-3">
-                    <div className="text-orange-500">
-                        <Hexagon size={28} fill="currentColor" />
+            <aside className={`fixed md:relative z-40 w-[260px] h-full bg-white border-r border-slate-200 flex flex-col flex-shrink-0 transition-transform duration-300 ease-in-out ${showSidebar ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
+                <div className="h-20 flex items-center justify-between px-6">
+                    <div className="flex items-center gap-3">
+                        <div className="text-orange-500">
+                            <Hexagon size={28} fill="currentColor" />
+                        </div>
+                        <span className="font-bold text-xl tracking-tight uppercase">EMSITPRO</span>
                     </div>
-                    <span className="font-bold text-xl tracking-tight uppercase">EMSITPRO</span>
+                    <button className="md:hidden text-slate-400 hover:text-slate-600" onClick={() => setShowSidebar(false)}>
+                        <X size={20} />
+                    </button>
                 </div>
 
                 <div className="px-6 mb-6">
@@ -144,14 +164,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </aside>
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col min-w-0">
+            <div className="flex-1 flex flex-col min-w-0 w-full">
                 {/* Header */}
-                <header className="h-20 bg-[#F8F9FA] flex items-center justify-between px-8 flex-shrink-0">
+                <header className="h-20 bg-[#F8F9FA] flex items-center justify-between px-4 md:px-8 flex-shrink-0">
                     <div className="flex items-center text-sm font-medium text-slate-500">
-                        Home <span className="mx-2 text-slate-300">/</span> 
+                        <button className="md:hidden p-2 -ml-2 mr-2 text-slate-500 hover:bg-slate-100 rounded-lg" onClick={() => setShowSidebar(true)}>
+                            <Menu size={20} />
+                        </button>
+                        <span className="hidden md:inline">Home <span className="mx-2 text-slate-300">/</span></span>
                         <span className="text-slate-900 capitalize">{pathname.replace('/', '')}</span>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 md:gap-4">
                         <div className="relative" ref={dropdownRef}>
                             <button onClick={handleToggleNotifications} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all relative">
                                 <Bell size={20} />
@@ -161,7 +184,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             </button>
                             
                             {showNotifications && (
-                                <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden z-50">
+                                <div className="absolute right-0 mt-2 w-72 md:w-80 bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden z-50">
                                     <div className="px-4 py-3 border-b border-slate-100">
                                         <h3 className="font-bold text-slate-800 text-sm">Notifications</h3>
                                     </div>
@@ -180,12 +203,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 </div>
                             )}
                         </div>
-                        <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
+                        <div className="flex items-center gap-3 pl-2 md:pl-4 border-l border-slate-200">
                             <div className="text-right hidden md:block">
                                 <div className="text-sm font-semibold text-slate-900">Admin</div>
                                 <div className="text-xs text-slate-500">Administrator</div>
                             </div>
-                            <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-sm">
+                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-sm">
                                 AD
                             </div>
                         </div>
@@ -193,7 +216,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </header>
 
                 {/* Page Content */}
-                <main className="flex-1 px-8 pb-8 overflow-y-auto">
+                <main className="flex-1 px-4 md:px-8 pb-8 overflow-y-auto">
                     {children}
                 </main>
             </div>
