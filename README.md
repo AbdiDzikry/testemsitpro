@@ -39,3 +39,36 @@
 - Rekam simulasi hasil pekerjaan Anda untuk semua fitur diatas, ke dalam video format .mp4 dan nama file akun github Anda (misal: junipro.mp4)
 - Unggah video ke alamat berikut: https://drive.google.com/drive/folders/1DtQ-KchZmPY0s9sq2Chvcj0KexlFTgyI?usp=sharing
 - Batas waktu unggah video, sesuai dengan waktu push repository pada Panduan Tes #1.
+
+---
+
+## Panduan Evaluator (Cara Menjalankan Aplikasi)
+
+Aplikasi ini telah dikonfigurasi menggunakan arsitektur **Laravel 11**, **Next.js 15**, dan **Tailwind CSS v3**.
+
+### 1. Persiapan Backend (Laravel)
+```bash
+cd backend
+composer install
+cp .env.example .env
+php artisan key:generate
+```
+Pastikan konfigurasi `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD` di file `.env` sudah sesuai dengan MySQL lokal Anda, lalu jalankan:
+```bash
+php artisan migrate:fresh --seed
+php artisan serve
+```
+*(Perintah `--seed` akan otomatis membuat 5 kategori, 50 produk dummy, dan akun admin)*
+
+### 2. Persiapan Frontend (Next.js)
+Buka terminal baru, lalu jalankan:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### 3. Akses Login Default
+Silakan buka `http://localhost:3000` di browser dan login menggunakan kredensial berikut:
+- **Email:** `admin123@email.com`
+- **Password:** `admin123`
