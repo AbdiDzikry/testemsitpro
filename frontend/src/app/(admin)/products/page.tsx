@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import api from '@/lib/api';
-import { Download, Plus, Edit, Trash, Search, ChevronLeft, ChevronRight, X, ChevronDown, FileText } from 'lucide-react';
+import { Download, Plus, Edit, Trash, Search, ChevronLeft, ChevronRight, X, ChevronDown, FileText, AlertTriangle } from 'lucide-react';
 
 const CustomSelect = ({ value, onChange, options, placeholder, className = '' }: { value: string, onChange: (val: string) => void, options: {value: string, label: string}[], placeholder: string, className?: string }) => {
     const [open, setOpen] = useState(false);
@@ -74,6 +74,7 @@ export default function ProductsPage() {
     const [isAddingCategory, setIsAddingCategory] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
     const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
 
     const fetchProducts = async () => {
         setLoading(true);
@@ -197,10 +198,19 @@ export default function ProductsPage() {
         setShowModal(true);
     };
 
-    const handleDelete = async (id: number) => {
-        if (confirm("Are you sure?")) {
-            await api.delete(`/products/${id}`);
+    const handleDelete = (id: number) => {
+        setDeleteConfirmId(id);
+    };
+
+    const confirmDeleteProduct = async () => {
+        if (!deleteConfirmId) return;
+        try {
+            await api.delete(`/products/${deleteConfirmId}`);
+            setDeleteConfirmId(null);
             fetchProducts();
+        } catch (e: any) {
+            console.error(e);
+            alert("Failed to delete product");
         }
     };
 
@@ -218,17 +228,25 @@ export default function ProductsPage() {
         }
     };
 
-    const handleDeleteCategory = async (id: string) => {
-        if (confirm("Are you sure you want to delete this category? All products within it will also be deleted!")) {
-            try {
-                await api.delete(`/categories/${id}`);
-                await fetchCategories();
+    const [deleteCategoryConfirmId, setDeleteCategoryConfirmId] = useState<string | null>(null);
+
+    const handleDeleteCategory = (id: string) => {
+        setDeleteCategoryConfirmId(id);
+    };
+
+    const confirmDeleteCategory = async () => {
+        if (!deleteCategoryConfirmId) return;
+        try {
+            await api.delete(`/categories/${deleteCategoryConfirmId}`);
+            await fetchCategories();
+            if (formData.category_id === deleteCategoryConfirmId) {
                 setFormData({ ...formData, category_id: '' });
-                fetchProducts();
-            } catch (e: any) {
-                console.error(e);
-                alert(e.response?.data?.message || "Failed to delete category");
             }
+            setDeleteCategoryConfirmId(null);
+            fetchProducts();
+        } catch (e: any) {
+            console.error(e);
+            alert(e.response?.data?.message || "Failed to delete category");
         }
     };
 
@@ -453,6 +471,66 @@ export default function ProductsPage() {
                     <div className="relative max-w-4xl max-h-[90vh]">
                         <button onClick={() => setPreviewImage(null)} className="absolute -top-4 -right-4 p-2 bg-white text-slate-800 hover:text-red-500 hover:bg-slate-50 rounded-full shadow-lg transition-all"><X size={20}/></button>
                         <img src={`http://localhost:8000/storage/${previewImage}`} alt="Full Preview" className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl" onClick={e => e.stopPropagation()} />
+                    </div>
+                </div>
+            )}
+
+            {deleteConfirmId && (
+                <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-[70] animate-[fadeIn_0.2s_ease-out]">
+                    <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden animate-[slideUp_0.3s_ease-out]">
+                        <div className="p-6 text-center">
+                            <div className="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <AlertTriangle size={32} />
+                            </div>
+                            <h2 className="text-xl font-bold text-slate-800 mb-2">Hapus Produk?</h2>
+                            <p className="text-sm text-slate-500 mb-6">
+                                Tindakan ini tidak dapat dibatalkan. Data produk akan dihapus secara permanen dari sistem.
+                            </p>
+                            <div className="flex gap-3 justify-center">
+                                <button 
+                                    onClick={() => setDeleteConfirmId(null)} 
+                                    className="flex-1 px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-sm font-semibold hover:bg-slate-200 transition-colors"
+                                >
+                                    Batal
+                                </button>
+                                <button 
+                                    onClick={confirmDeleteProduct} 
+                                    className="flex-1 px-4 py-2.5 bg-red-500 text-white rounded-xl text-sm font-semibold hover:bg-red-600 shadow-sm shadow-red-500/20 transition-colors"
+                                >
+                                    Ya, Hapus
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {deleteCategoryConfirmId && (
+                <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-[80] animate-[fadeIn_0.2s_ease-out]">
+                    <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden animate-[slideUp_0.3s_ease-out]">
+                        <div className="p-6 text-center">
+                            <div className="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <AlertTriangle size={32} />
+                            </div>
+                            <h2 className="text-xl font-bold text-slate-800 mb-2">Hapus Kategori?</h2>
+                            <p className="text-sm text-slate-500 mb-6">
+                                Peringatan keras: Menghapus kategori ini juga akan menghapus <strong>seluruh produk</strong> yang ada di dalamnya secara permanen!
+                            </p>
+                            <div className="flex gap-3 justify-center">
+                                <button 
+                                    onClick={() => setDeleteCategoryConfirmId(null)} 
+                                    className="flex-1 px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-sm font-semibold hover:bg-slate-200 transition-colors"
+                                >
+                                    Batal
+                                </button>
+                                <button 
+                                    onClick={confirmDeleteCategory} 
+                                    className="flex-1 px-4 py-2.5 bg-red-500 text-white rounded-xl text-sm font-semibold hover:bg-red-600 shadow-sm shadow-red-500/20 transition-colors"
+                                >
+                                    Ya, Hapus Semua
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
