@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Package } from 'lucide-react';
 import Link from 'next/link';
 import api from '@/lib/api';
@@ -99,16 +99,34 @@ export default function DashboardPage() {
                     <h2 className="text-lg font-bold text-slate-800 mb-2">Category Status</h2>
                     <p className="text-sm text-slate-500 mb-8">Distribution of products across categories</p>
                     
-                    <div className="flex-1 flex flex-col justify-center gap-6">
-                        {data.map((item: any, i: number) => (
-                            <div key={item.id} className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className={`w-3 h-3 rounded-full ${i % 2 === 0 ? 'bg-orange-500' : 'bg-orange-300'}`}></div>
-                                    <span className="text-sm font-medium text-slate-600">{item.name}</span>
+                    <div className="flex-1 flex flex-col justify-center h-full">
+                        <ResponsiveContainer width="100%" height={200}>
+                            <PieChart>
+                                <Pie
+                                    data={data}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={60}
+                                    outerRadius={80}
+                                    paddingAngle={5}
+                                    dataKey="products_count"
+                                >
+                                    {data.map((entry: any, index: number) => (
+                                        <Cell key={`cell-${index}`} fill={['#f97316', '#fdba74', '#fed7aa', '#ffedd5'][index % 4]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
+                            </PieChart>
+                        </ResponsiveContainer>
+                        
+                        <div className="grid grid-cols-2 gap-4 mt-6">
+                            {data.map((item: any, i: number) => (
+                                <div key={item.id} className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ['#f97316', '#fdba74', '#fed7aa', '#ffedd5'][i % 4] }}></div>
+                                    <span className="text-xs font-medium text-slate-600 truncate" title={item.name}>{item.name}</span>
                                 </div>
-                                <span className="text-sm font-bold text-slate-800">{item.products_count}</span>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
