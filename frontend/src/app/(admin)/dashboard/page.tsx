@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Package } from 'lucide-react';
 import api from '@/lib/api';
 
 export default function DashboardPage() {
@@ -26,28 +27,73 @@ export default function DashboardPage() {
 
     return (
         <div>
-            <h1 className="text-3xl font-bold mb-6 text-slate-800">Dashboard</h1>
+            <div className="flex items-center justify-between mb-8">
+                <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Dashboard</h1>
+                <div className="flex gap-3">
+                    <button className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all">
+                        Export Report
+                    </button>
+                    <button className="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600 transition-all shadow-sm shadow-orange-500/20">
+                        New Product
+                    </button>
+                </div>
+            </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 {data.map((item: any) => (
-                    <div key={item.id} className="bg-white p-6 rounded-lg shadow-sm border border-slate-100">
-                        <div className="text-slate-500 text-sm font-medium mb-2">{item.name}</div>
-                        <div className="text-3xl font-bold text-slate-800">{item.products_count} <span className="text-lg font-normal text-slate-500">Products</span></div>
+                    <div key={item.id} className="bg-white p-5 rounded-xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-slate-100 flex flex-col justify-between h-32">
+                        <div className="flex justify-between items-start">
+                            <div className="text-slate-500 text-sm font-medium">{item.name}</div>
+                            <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center text-orange-500">
+                                <Package size={16} />
+                            </div>
+                        </div>
+                        <div>
+                            <div className="text-3xl font-bold text-slate-800">{item.products_count}</div>
+                            <div className="text-xs text-slate-400 mt-1"><span className="text-emerald-500 font-medium">+12%</span> vs last month</div>
+                        </div>
                     </div>
                 ))}
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-100 h-96 pb-12">
-                <h2 className="text-lg font-semibold mb-6 text-slate-800">Products by Category</h2>
-                <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={data}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="name" />
-                        <YAxis allowDecimals={false} />
-                        <Tooltip cursor={{fill: 'transparent'}} />
-                        <Bar dataKey="products_count" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                </ResponsiveContainer>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-slate-100 h-[420px] flex flex-col">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-lg font-bold text-slate-800">Products Overview</h2>
+                        <select className="bg-white border border-slate-200 text-slate-500 text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-orange-500">
+                            <option>Monthly</option>
+                            <option>Weekly</option>
+                        </select>
+                    </div>
+                    <div className="flex-1 min-h-0">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} dy={10} />
+                                <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
+                                <Tooltip cursor={{fill: '#f8fafc'}} contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
+                                <Bar dataKey="products_count" fill="#f97316" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+                
+                <div className="bg-white p-6 rounded-xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-slate-100 h-[420px] flex flex-col">
+                    <h2 className="text-lg font-bold text-slate-800 mb-2">Category Status</h2>
+                    <p className="text-sm text-slate-500 mb-8">Distribution of products across categories</p>
+                    
+                    <div className="flex-1 flex flex-col justify-center gap-6">
+                        {data.map((item: any, i: number) => (
+                            <div key={item.id} className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className={`w-3 h-3 rounded-full ${i % 2 === 0 ? 'bg-orange-500' : 'bg-orange-300'}`}></div>
+                                    <span className="text-sm font-medium text-slate-600">{item.name}</span>
+                                </div>
+                                <span className="text-sm font-bold text-slate-800">{item.products_count}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
     );
