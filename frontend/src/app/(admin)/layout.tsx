@@ -9,7 +9,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const router = useRouter();
     const pathname = usePathname();
     const [isClient, setIsClient] = useState(false);
-    const [notifications, setNotifications] = useState([]);
+    const [notifications, setNotifications] = useState<any[]>([]);
     const [showNotifications, setShowNotifications] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
