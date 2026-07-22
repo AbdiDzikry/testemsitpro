@@ -45,12 +45,14 @@ export default function LogsPage() {
                         if (log.message.toLowerCase().includes('added') || log.message.toLowerCase().includes('created')) type = 'success';
                         if (log.message.toLowerCase().includes('updated')) type = 'warning';
                         if (log.message.toLowerCase().includes('deleted')) type = 'danger';
+                        if (log.message.toLowerCase().includes('login') || log.message.toLowerCase().includes('logout')) type = 'auth';
 
                         const colorClasses = {
                             info: 'bg-blue-100 text-blue-600 border-blue-200',
                             success: 'bg-emerald-100 text-emerald-600 border-emerald-200',
                             warning: 'bg-amber-100 text-amber-600 border-amber-200',
                             danger: 'bg-red-100 text-red-600 border-red-200',
+                            auth: 'bg-purple-100 text-purple-600 border-purple-200',
                         }[type];
 
                         return (

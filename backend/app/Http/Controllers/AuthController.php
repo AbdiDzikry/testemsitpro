@@ -22,6 +22,8 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->firstOrFail();
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        \App\Models\Notification::create(['message' => "System Login: {$user->name} successfully logged in", 'is_read' => true]);
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',
@@ -31,7 +33,11 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $user = $request->user();
+        if ($user) {
+            \App\Models\Notification::create(['message' => "System Logout: {$user->name} successfully logged out", 'is_read' => true]);
+            $user->currentAccessToken()->delete();
+        }
         return response()->json(['message' => 'Logged out successfully']);
     }
 }
