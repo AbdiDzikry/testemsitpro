@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Exports\ProductsExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -42,6 +43,7 @@ class ProductController extends Controller
         ]);
 
         $product = Product::create($validated);
+        Notification::create(['message' => "New product added: {$product->name}"]);
         return response()->json($product->load('category'), 201);
     }
 
@@ -60,6 +62,7 @@ class ProductController extends Controller
         ]);
 
         $product->update($validated);
+        Notification::create(['message' => "Product updated: {$product->name}"]);
         return response()->json($product->load('category'));
     }
 

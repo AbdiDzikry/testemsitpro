@@ -9,14 +9,34 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const router = useRouter();
     const pathname = usePathname();
     const [isClient, setIsClient] = useState(false);
+    const [notifications, setNotifications] = useState([]);
+    const [showNotifications, setShowNotifications] = useState(false);
 
     useEffect(() => {
         setIsClient(true);
         const token = localStorage.getItem('token');
         if (!token) {
             router.push('/');
+        } else {
+            fetchNotifications(token);
+            const interval = setInterval(() => fetchNotifications(token), 10000);
+            return () => clearInterval(interval);
         }
     }, [router]);
+
+    const fetchNotifications = async (token: string) => {
+        try {
+            const res = await fetch('http://localhost:8000/api/notifications', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setNotifications(data);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -88,9 +108,34 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         <span className="text-slate-900 capitalize">{pathname.replace('/', '')}</span>
                     </div>
                     <div className="flex items-center gap-4">
-                        <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all">
-                            <Bell size={20} />
-                        </button>
+                        <div className="relative">
+                            <button onClick={() => setShowNotifications(!showNotifications)} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all relative">
+                                <Bell size={20} />
+                                {notifications.length > 0 && (
+                                    <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#F8F9FA]"></span>
+                                )}
+                            </button>
+                            
+                            {showNotifications && (
+                                <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden z-50">
+                                    <div className="px-4 py-3 border-b border-slate-100">
+                                        <h3 className="font-bold text-slate-800 text-sm">Notifications</h3>
+                                    </div>
+                                    <div className="max-h-[300px] overflow-y-auto">
+                                        {notifications.length === 0 ? (
+                                            <div className="p-4 text-center text-sm text-slate-500">No notifications yet</div>
+                                        ) : (
+                                            notifications.map((notif: any) => (
+                                                <div key={notif.id} className="p-4 border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                                                    <p className="text-sm text-slate-700">{notif.message}</p>
+                                                    <span className="text-xs text-slate-400 mt-1 block">{new Date(notif.created_at).toLocaleString('id-ID')}</span>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                         <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
                             <div className="text-right hidden md:block">
                                 <div className="text-sm font-semibold text-slate-900">Admin</div>

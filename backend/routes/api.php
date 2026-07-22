@@ -20,6 +20,8 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::post('/categories', [CategoryController::class, 'store']);
+    Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
     Route::get('/products/export', [ProductController::class, 'export']);
     Route::apiResource('products', ProductController::class);
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index']);
 });
