@@ -88,8 +88,8 @@ export default function DashboardPage() {
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} dy={10} />
                                 <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
-                                <Tooltip cursor={{fill: '#f8fafc'}} formatter={(value) => [value, 'Jumlah']} contentStyle={{backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #f1f5f9', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', color: '#475569'}} itemStyle={{color: '#475569', fontWeight: 600}} />
-                                <Bar dataKey="products_count" name="Jumlah" fill="#f97316" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                                <Tooltip cursor={{fill: '#f8fafc'}} formatter={(value) => [value, 'Total Produk']} contentStyle={{backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #f1f5f9', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', color: '#475569'}} itemStyle={{color: '#475569', fontWeight: 600}} />
+                                <Bar dataKey="products_count" name="Total Produk" fill="#f97316" radius={[4, 4, 0, 0]} maxBarSize={40} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -110,12 +110,13 @@ export default function DashboardPage() {
                                     outerRadius={80}
                                     paddingAngle={5}
                                     dataKey="products_count"
+                                    nameKey="name"
                                 >
                                     {data.map((entry: any, index: number) => (
                                         <Cell key={`cell-${index}`} fill={['#f97316', '#fb923c', '#fdba74', '#fed7aa', '#ffedd5'][index % 5]} />
                                     ))}
                                 </Pie>
-                                <Tooltip formatter={(value) => [value, 'Jumlah']} contentStyle={{backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #f1f5f9', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', color: '#475569'}} itemStyle={{color: '#475569', fontWeight: 600}} />
+                                <Tooltip formatter={(value, name) => [`${value} Produk`, name]} contentStyle={{backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #f1f5f9', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', color: '#475569'}} itemStyle={{color: '#475569', fontWeight: 600}} />
                             </PieChart>
                         </ResponsiveContainer>
                         
