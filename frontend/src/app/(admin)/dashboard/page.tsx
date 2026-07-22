@@ -22,6 +22,22 @@ export default function DashboardPage() {
            });
     }, []);
 
+    const handleExport = async () => {
+        try {
+            const response = await api.get('/products/export', { responseType: 'blob' });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'products.xlsx');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (e) {
+            console.error('Export error', e);
+            alert('Failed to export data');
+        }
+    };
+
     if (loading) {
         return <div className="flex justify-center items-center h-full text-slate-500">Loading...</div>;
     }
@@ -31,7 +47,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between mb-8">
                 <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Dashboard</h1>
                 <div className="flex gap-3">
-                    <button onClick={() => window.open('http://localhost:8000/api/products/export', '_blank')} className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all">
+                    <button onClick={handleExport} className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all">
                         Export Report
                     </button>
                     <Link href="/products" className="flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600 transition-all shadow-sm shadow-orange-500/20">
