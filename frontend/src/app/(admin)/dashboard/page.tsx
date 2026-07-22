@@ -67,7 +67,7 @@ export default function DashboardPage() {
                         </div>
                         <div>
                             <div className="text-3xl font-bold text-slate-800">{item.products_count}</div>
-                            <div className="text-xs text-slate-400 mt-1"><span className="text-emerald-500 font-medium">+12%</span> vs last month</div>
+                            <div className="text-xs text-slate-400 mt-1">Total produk aktif saat ini</div>
                         </div>
                     </div>
                 ))}
